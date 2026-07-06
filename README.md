@@ -11,5 +11,4 @@ Based on Deep Learning Specialization, deeplearning.ai, this is my trial on impl
 - After training, it showed 97.12% accuracy for training set and 98.00% for test set.
 
 
-
 # 3. Deep Neural Network
