@@ -42,9 +42,9 @@ def sigmoid(x):
 
 
 def initialize_parameters(n_x,n_h,n_y):
-    W1 = np.random.randn (n_h, n_x) * np.sqrt(2. / n_x)          # Be aware of matrix dimension. Use the formula!
-    b1 = np.zeros((n_h, 1))
-    
+    W1 = np.random.randn (n_h, n_x) * np.sqrt(2. / n_x)          # W1 is 4x2 matrix since the input data is 2x800 matrix
+    b1 = np.zeros((n_h, 1))                                      # At forward propagation, Z1 = W1 * X -> (4,2) * (2,800) matrix multiplication
+                                                                 # b1 is 4x1 matrix since hidden layer has 4 nodes
     W2 = np.random.randn (n_y, n_h) * np.sqrt(2. / n_h)          # Note 0.01 would make weights too small (almost linear) -> He Initialization
     b2 = np.zeros((n_y,1))
     
@@ -82,8 +82,8 @@ def forward_propagation(X, parameters):
     return a2, cache
     
 def compute_cost(A2, Y):
-    m = Y.shape[1] # Number of samples
-    cost = (-1/m) * np.sum(Y * np.log(A2 + 1e-15) + (1-Y) * np.log(1-A2 + 1e-15))    # Formula for cost function
+    m = Y.shape[1] # Number of samples -> Sample들을 다 더해서 평균을 내야하므로 sample 갯수가 필요
+    cost = (-1/m) * np.sum(Y * np.log(A2 + 1e-15) + (1-Y) * np.log(1-A2 + 1e-15))    # Formula for binary cross-entropy cost function
     cost = np.squeeze(cost)
     
     return cost
@@ -146,7 +146,7 @@ def update_parameters(parameters, grads, learning_rate = 0.1):
 def model(X,Y, n_h, num_iterations = 10000, print_cost = False):
     n_x = X.shape[0]
     n_y = Y.shape[0]
-    parameters = initialize_parameters(n_x,n_h,n_y)
+    parameters = initialize_parameters(n_x,n_h,n_y)         # initialize_parameters 함수를 이용해 parameters 안에 초기 weight, bias를 저장
     
     for i in range(0, num_iterations):
         A2, cache = forward_propagation(X, parameters)
@@ -155,10 +155,10 @@ def model(X,Y, n_h, num_iterations = 10000, print_cost = False):
         parameters = update_parameters(parameters, grads)
         
         # For every 1000 iteration, print the cost
-        if print_cost and i % 1000 == 0:
+        if print_cost and i % 1000 == 0:                    # i가 1000의 배수라면
             print(f"Cost after iteration {i}: {cost:.6f}")
     
-    return parameters
+    return parameters                                       # 함수의 결과값은 updated W1,b1,W2,b2
 
 # Find the optimal W,b
 
@@ -167,11 +167,11 @@ parameters = model(X_train, Y_train, n_h = 4, num_iterations=10000, print_cost=T
 ############################################################################################################################################
 # 3. Test 
 
-def predict(parameters, X):
+def predict(parameters, X):             # 학습된 Weight, bias를 통해 실제로 테스트
     A2, cache = forward_propagation(X, parameters)
-    predictions = (A2 > 0.5)
+    predictions = (A2 > 0.5)            # A2 = [0.91,0.12,0.63,0.44] 같은 matrix. 이를 [True, False, True, False] 같은 함수로 변환
     
-    return predictions
+    return predictions                  # 예측(test)만 할땐 이미 updated weight,bias 사용 -> backward propagation은 안함
 
 train_predict = predict(parameters, X_train)
 test_predict = predict(parameters, X_test)
