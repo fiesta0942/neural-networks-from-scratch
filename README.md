@@ -12,3 +12,6 @@ Based on Deep Learning Specialization, deeplearning.ai, this is my trial on impl
 
 
 # 3. Deep Neural Network
+- Based on CIFAR-10 image dataset, I've implemented Deep Neural Network with 2 hidden layer. 
+- It used ReLU activation function in hidden layer and softmax function to classify 10 classes.
+- I've implemented two backward propagation: linear and ReLU and understood how backward propagation work for multi hidden layer, along with how caches work.

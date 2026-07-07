@@ -44,12 +44,12 @@ def initialize_parameters(layer_dims):
 
 def forward_propagation(A, W, b):
     Z = np.dot(W,A) + b
-    linear_cache = (A, W, b)
+    linear_cache = (A, W, b)        #From backpropagation, dW = dZ * A_prev.T , db = sum(dZ), dA_prev = W.T * dZ -> A,W,b is needed
     
     return Z, linear_cache
 
 def relu(Z):
-    A = np.maximum(0,Z)     # ReLu
+    A = np.maximum(0,Z)     # ReLu, used in "Hidden" Layer
     activation_cache = Z    # Cache for backward propagation
     
     return A, activation_cache
@@ -63,7 +63,7 @@ def softmax(Z):             # Since there are 10 outputs, sigmoid(0 or 1) cannot
     
     return A, activation_cache
 
-def activation_forward_propagation(A_prev, W,b, activation):
+def activation_forward_propagation(A_prev, W,b, activation):        #Z = W*A + b 및 A = activation(z): 2가지를 다 하는 함수
     
     if activation == "relu":
         Z, linear_cache = forward_propagation(A_prev, W, b) # np.dot(A_prev, W) + b를 계산
@@ -73,7 +73,7 @@ def activation_forward_propagation(A_prev, W,b, activation):
         Z, linear_cache = forward_propagation(A_prev, W,b)
         A, activation_cache = softmax(Z)
         
-    layer_cache = (linear_cache, activation_cache)
+    layer_cache = (linear_cache, activation_cache)          # linear_cache = (A_prev, W, b) , activation_cache = Z
     
     return A, layer_cache
     
@@ -83,7 +83,7 @@ def compute_cost(AL, Y):         # Calculate the cost function
     # Y: one - hot label (Real Answer)
     
     m = Y.shape[1]
-    cost = - np.sum (Y * np.log(AL + 1e-8)) / m     # Cross - Entropy Loss. Check mathematical progress!
+    cost = - np.sum (Y * np.log(AL + 1e-8)) / m     # Multi-class Cross - Entropy Loss
     
     return cost
 
@@ -120,8 +120,8 @@ def activation_backward_propagation(dA, layer_cache, activation):
 
 def L_model_forward (X, parameters):
     caches = []
-    A = X
-    L = len(parameters) // 2 # [3072, 50, 20, 10]일 경우 Hidden Layer가 2개이므로 W,b도 2개씩 = 2
+    A = X                    # 첫번째 layer에 들어갈 값은 Input data X
+    L = len(parameters) // 2 # parameters 안에는 W1,b1,W2,b2,W3,b3 가 있음. /2 를 해야 실제 계산 layer 갯수 (3)이 나옴
     
     for l in range (1,L):       # ReLu는 1층부터 L-1층까지
         A_prev = A
@@ -146,13 +146,13 @@ def L_model_backward (AL, Y, caches):
     
     dZ = AL - Y
     
-    layer_cache = caches[L-1]
+    layer_cache = caches[L-1]   # 이전 layer의 cache를 가져옴
     linear_cache, activation_cache = layer_cache
     dA_prev, dW, db = backward_propagation(dZ, linear_cache)
     
     grads[f'dA{L-1}'] = dA_prev
     grads[f'dW{L}'] = dW
-    grads[f'db{L}'] = db
+    grads[f'db{L}'] = db        # backward prop으로 구한 dA_prev,dW,db를 각 layer cache마다 저장
     
     for l in reversed(range(1,L)):
         layer_cache = caches [l - 1]
